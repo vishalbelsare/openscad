@@ -24,35 +24,31 @@
  */
 #pragma once
 
-#include "shape.h"
-#include "rect.h"
-#include "path.h"
-#include "svgpage.h"
-#include "memory.h"
+#include <exception>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "libsvg/shape.h"
 
 namespace libsvg {
 
-class SvgException: public std::exception
+class SvgException : public std::exception
 {
 public:
-        SvgException(const std::string& message) : message(message) { }
-        virtual ~SvgException() {}
+  SvgException(std::string message) : message(std::move(message)) {}
 
-        const char* what() const throw() override
-        {
-                return message.c_str();
-        }
+  [[nodiscard]] const char *what() const noexcept override { return message.c_str(); }
 
 private:
-        std::string message;
+  std::string message;
 };
 
-using shapes_list_t = std::vector<shared_ptr<shape>>;
+using shapes_list_t = std::vector<std::shared_ptr<shape>>;
 
-shapes_list_t *
-libsvg_read_file(const char *filename, void *context);
+shapes_list_t *libsvg_read_file(const char *filename, void *context);
 
-void
-libsvg_free(shapes_list_t *shapes);
+void libsvg_free(shapes_list_t *shapes);
 
-}
+}  // namespace libsvg
